@@ -1,0 +1,16 @@
+{
+  "level": "debug",
+  "encoding": "json",
+  "__comment":"specify the log path or stdout to output in console,  ex:/Users/jayson/go/src/crontab/log",
+  "outputPaths": ["stdout"], 
+  "errorOutputPaths": ["stderr"],
+  "_initialFields": {
+    "foo": "bar"
+  },
+  "encoderConfig": {
+    "messageKey": "message",
+    "levelKey": "level",
+    "levelEncoder": "lowercase"
+  },
+  "retentionHours": 168
+}
