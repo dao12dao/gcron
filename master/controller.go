@@ -56,7 +56,7 @@ func InitController(ports []string) (err error) {
 }
 
 func initHandler() http.Handler {
-	gin.SetMode(gin.DebugMode)
+	gin.SetMode(Conf.Base.Mode)
 	handler := gin.New()
 	handler.Use(cors.Middleware(cors.Config{
 		Origins:         "*",
@@ -72,7 +72,14 @@ func initHandler() http.Handler {
 	handler.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(200, "test")
 	})
-	Route(handler.Group(""))
+
+	// static file mapping
+	if len(Conf.Base.WebRoot) > 0 {
+		handler.Static("/web", Conf.Base.WebRoot)
+	}
+
+	// api group
+	Route(handler.Group("api"))
 
 	return handler
 }

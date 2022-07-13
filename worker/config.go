@@ -1,4 +1,4 @@
-package master
+package worker
 
 import "github.com/go-ini/ini"
 

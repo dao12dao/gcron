@@ -1,6 +1,6 @@
 package common
 
 const (
-	SaveTaskKeyPrefix string = "/cron/tasks/"
-	KillTaskKeyPrefix string = "/cron/killers/"
+	SAVE_TASK_PATH string = "/cron/tasks/"
+	KILL_TASK_PATH string = "/cron/killers/"
 )

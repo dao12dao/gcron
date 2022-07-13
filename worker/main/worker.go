@@ -1,7 +1,7 @@
 package main
 
 import (
-	"crontab/master"
+	"crontab/worker"
 	"flag"
 	"fmt"
 	"os"
@@ -37,23 +37,23 @@ func Init() {
 	initEnv()
 	initArgs()
 
-	if err = master.InitConfig(configPath); err != nil {
+	if err = worker.InitConfig(configPath); err != nil {
 		goto ERR
 	}
 
-	if err = master.InitLogger(master.Conf.Base.LogConfigPath); err != nil {
+	if err = worker.InitLogger(worker.Conf.Base.LogConfigPath); err != nil {
 		goto ERR
 	}
 
-	if err = master.InitController(master.Conf.ApiConf.Port); err != nil {
+	// if err = master.InitController(master.Conf.ApiConf.Port); err != nil {
+	// 	goto ERR
+	// }
+
+	if err = worker.InitTaskManager(worker.Conf.EtcdConf); err != nil {
 		goto ERR
 	}
 
-	if err = master.InitTaskManager(master.Conf.EtcdConf); err != nil {
-		goto ERR
-	}
-
-	println("master.Init() run complete!")
+	println("worker.Init() run complete!")
 
 	c = make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
@@ -74,5 +74,5 @@ ERR:
 }
 
 func Quit() {
-	master.CloseController()
+	// master.CloseController()
 }

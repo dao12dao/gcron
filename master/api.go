@@ -18,6 +18,11 @@ func saveTask(c *gin.Context) {
 		goto ERR
 	}
 
+	if len(task.Name) <= 0 || len(task.Command) <= 0 || len(task.CronExpr) <= 0 {
+		err = common.ErrorTaskFieldIsNil
+		goto ERR
+	}
+
 	if oldTask, err = GlobalTaskMgr.SaveTask(task); err != nil {
 		goto ERR
 	}
@@ -71,15 +76,15 @@ ERR:
 
 func killTask(c *gin.Context) {
 	var (
-		err  error
-		task *model.Task
+		err      error
+		taskName string
 	)
 
-	if err = c.BindJSON(&task); err != nil {
+	if err = c.BindJSON(&taskName); err != nil {
 		goto ERR
 	}
 
-	if err = GlobalTaskMgr.KillTask(task.Name); err != nil {
+	if err = GlobalTaskMgr.KillTask(taskName); err != nil {
 		goto ERR
 	}
 

@@ -63,7 +63,7 @@ func (m *TaskManager) ListTask() (list []*model.Task, err error) {
 		idx     int
 	)
 
-	if getResp, err = m.KV.Get(context.TODO(), common.SaveTaskKeyPrefix, clientv3.WithPrefix()); err != nil {
+	if getResp, err = m.KV.Get(context.TODO(), common.SAVE_TASK_PATH, clientv3.WithPrefix()); err != nil {
 		return
 	}
 
@@ -89,7 +89,7 @@ func (m *TaskManager) SaveTask(task *model.Task) (oldTask *model.Task, err error
 		taskPath  string
 	)
 
-	taskPath = common.SaveTaskKeyPrefix + task.Name
+	taskPath = common.SAVE_TASK_PATH + task.Name
 	if taskValue, err = json.Marshal(task); err != nil {
 		return
 	}
@@ -108,13 +108,13 @@ func (m *TaskManager) SaveTask(task *model.Task) (oldTask *model.Task, err error
 	return
 }
 
-// remove task by name
+// remove tash by name
 func (m *TaskManager) RemoveTask(name string) (oldTask *model.Task, err error) {
 	var (
 		delResp *clientv3.DeleteResponse
 	)
 
-	taskPath := common.SaveTaskKeyPrefix + name
+	taskPath := common.SAVE_TASK_PATH + name
 	if delResp, err = m.KV.Delete(context.TODO(), taskPath, clientv3.WithPrevKV()); err != nil {
 		return
 	}
@@ -135,7 +135,7 @@ func (m *TaskManager) KillTask(name string) (err error) {
 		leaseID        clientv3.LeaseID
 	)
 
-	taskPath := common.KillTaskKeyPrefix + name
+	taskPath := common.KILL_TASK_PATH + name
 	// to create lease just use for: trigger the change event to listener, then do kill.
 	if leaseGrantResp, err = m.Lease.Grant(context.TODO(), 1); err != nil {
 		return
