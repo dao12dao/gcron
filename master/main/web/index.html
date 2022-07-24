@@ -15,7 +15,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="page-header">
-                    <h1>管理后台</h1><small>Golang分布式Crontab</small>
+                    <h1>管理后台<small>Golang分布式Crontab</small></h1>
                 </div>
             </div>
         </div>
@@ -24,6 +24,7 @@
         <div class="row">
             <div class="col-md-12">
                 <button type="button" class="btn btn-primary" id="btn-create">新建任务</button>
+                <button type="button" class="btn btn-info" id="btn-worker">健康节点</button>
             </div>
         </div>
 
@@ -66,33 +67,91 @@
     <!-- 编辑和新增的模态框 -->
     <div id="task-model" class="modal fade" role="dialog" aria-hidden="true" tabindex="-1">
         <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title">编辑任务</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" aria-hidden="true"></button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="edit-name"><h6>任务名称</h6></label>
-                        <input type="text" class="form-control" id="edit-name" placeholder="task name">
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-command"><h6>Shell命令</h6></label>
-                        <input type="text" class="form-control" id="edit-command" placeholder="shell command">
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-cronExpr"><h6>Cron表达式</h6></label>
-                        <input type="text" class="form-control" id="edit-cronExpr" placeholder="crontab expression">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-info" id="btn-save">保存</button>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">编辑任务</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="edit-name"><h6>任务名称</h6></label>
+                            <input type="text" class="form-control" id="edit-name" placeholder="task name">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-command"><h6>Shell命令</h6></label>
+                            <input type="text" class="form-control" id="edit-command" placeholder="shell command">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-cronExpr"><h6>Cron表达式</h6></label>
+                            <input type="text" class="form-control" id="edit-cronExpr" placeholder="crontab expression">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-info" id="btn-save">保存</button>
+                </div>
             </div>
         </div>
     </div>
+
+    <div id="log-model" class="modal fade" role="dialog" aria-hidden="true" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">任务日志</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <table id="log-list" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Shell命令</th>
+                                <th>错误原因</th>
+                                <th>脚本输出</th>
+                                <th>计划开始时间</th>
+                                <th>实际调度时间</th>
+                                <th>开始执行时间</th>
+                                <th>结束执行时间</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="worker-model" class="modal fade" role="dialog" aria-hidden="true" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">健康节点</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <table id="worker-list" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>节点IP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- script脚本 -->
@@ -117,6 +176,30 @@
                 $('#edit-cronExpr').val('')
 
                 $('#task-model').modal('show')
+            })
+
+            $('#btn-worker').on('click',function(event){
+                $.ajax({
+                    url: '/api/cron/workers',
+                    dataType: 'json',
+                    method:'GET',
+                    success: function(resp){
+                        if (resp.code != 0) {
+                            return
+                        }
+
+                        $('#worker-list tbody').empty()
+                        var logList = resp.data
+                        for(var i = 0;i < logList.length;i++) {
+                            var log = logList[i];
+                            var tr = $('<tr>')
+                                .append($('<td class="IP">').html(log));
+
+                            $('#worker-list tbody').append(tr)
+                        }
+                        $('#worker-model').modal('show')
+                    }
+                })
             })
 
             // save task
@@ -167,7 +250,33 @@
 
             // view task log
             $('#task-list').on('click', '.log-task', function(event){
-                
+                var taskName = $(this).parents('tr').children('.task-name').text()
+                $.ajax({
+                    url: '/api/cron/task/log/' + taskName,
+                    dataType: 'json',
+                    method:'GET',
+                    success: function(resp){
+                        if (resp.code != 0) {
+                            return
+                        }
+                        $('#log-list tbody').empty()
+                        var logList = resp.data
+                        for(var i = 0;i < logList.length;i++) {
+                            var log = logList[i];
+                            var tr = $('<tr>')
+                                .append($('<td class="command">').html(log.command))
+                                .append($('<td class="err">').html(log.err))
+                                .append($('<td class="output">').html(log.output))
+                                .append($('<td class="plan_time">').html(log.plan_time))
+                                .append($('<td class="schedule_time">').html(log.schedule_time))
+                                .append($('<td class="start_time">').html(log.start_time))
+                                .append($('<td class="end_time">').html(log.end_time));
+
+                            $('#log-list tbody').append(tr)
+                        }
+                        $('#log-model').modal('show')
+                    }
+                })
             })
 
             // refresh the task list
@@ -218,6 +327,10 @@
 
         .form-group {
             margin-top: 20px;
+        }
+
+        #btn-log {
+            margin-left: 20px;
         }
     </style>
 </body>

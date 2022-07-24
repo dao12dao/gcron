@@ -3,7 +3,7 @@ package master
 import (
 	"context"
 	"crontab/common/middleware"
-	"fmt"
+	"crontab/common/zap"
 	"net"
 	"net/http"
 	"time"
@@ -89,7 +89,7 @@ func CloseController() {
 	_ = cancel
 	for _, svr := range ServerList {
 		if err := svr.Shutdown(ctx); err != nil {
-			fmt.Printf("shutdown err:%v", err)
+			zap.Zlogger.Errorf("master.svr.Shutdown() panic, error is:%v", err)
 		}
 	}
 

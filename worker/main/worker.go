@@ -1,9 +1,10 @@
 package main
 
 import (
+	"crontab/common/zap"
 	"crontab/worker"
+	"crontab/worker/task"
 	"flag"
-	"fmt"
 	"os"
 	"os/signal"
 	"runtime"
@@ -41,19 +42,31 @@ func Init() {
 		goto ERR
 	}
 
-	if err = worker.InitLogger(worker.Conf.Base.LogConfigPath); err != nil {
+	if err = worker.InitLogger(); err != nil {
 		goto ERR
 	}
 
-	// if err = master.InitController(master.Conf.ApiConf.Port); err != nil {
-	// 	goto ERR
-	// }
-
-	if err = worker.InitTaskManager(worker.Conf.EtcdConf); err != nil {
+	if err = worker.InitRegister(worker.Conf.EtcdConf); err != nil {
 		goto ERR
 	}
 
-	println("worker.Init() run complete!")
+	if err = task.InitTaskLogManager(worker.Conf.MongoConf); err != nil {
+		goto ERR
+	}
+
+	if err = task.InitTaskExecutor(); err != nil {
+		goto ERR
+	}
+
+	if err = task.InitScheduler(); err != nil {
+		goto ERR
+	}
+
+	if err = task.InitTaskManager(worker.Conf.EtcdConf); err != nil {
+		goto ERR
+	}
+
+	zap.Zlogger.Infof("worker.Init() completed!")
 
 	c = make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
@@ -70,9 +83,9 @@ func Init() {
 	}
 
 ERR:
-	fmt.Printf("%+v", err)
+	zap.Zlogger.Errorf("worker.Init() panic, error is:%+v", err)
 }
 
 func Quit() {
-	// master.CloseController()
+	zap.Zlogger.Infof("worker.Quit() completed!")
 }

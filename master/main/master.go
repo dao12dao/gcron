@@ -1,9 +1,9 @@
 package main
 
 import (
+	"crontab/common/zap"
 	"crontab/master"
 	"flag"
-	"fmt"
 	"os"
 	"os/signal"
 	"runtime"
@@ -45,6 +45,14 @@ func Init() {
 		goto ERR
 	}
 
+	if err = master.InitWorkerManager(master.Conf.EtcdConf); err != nil {
+		goto ERR
+	}
+
+	if err = master.InitTaskLogManager(master.Conf.MongoConf); err != nil {
+		goto ERR
+	}
+
 	if err = master.InitController(master.Conf.ApiConf.Port); err != nil {
 		goto ERR
 	}
@@ -53,7 +61,7 @@ func Init() {
 		goto ERR
 	}
 
-	println("master.Init() run complete!")
+	zap.Zlogger.Infof("master.Init() completed!")
 
 	c = make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
@@ -70,9 +78,10 @@ func Init() {
 	}
 
 ERR:
-	fmt.Printf("%+v", err)
+	zap.Zlogger.Errorf("master.Init() panic, error is:%v", err)
 }
 
 func Quit() {
 	master.CloseController()
+	zap.Zlogger.Infof("master.Quit() Completed!")
 }

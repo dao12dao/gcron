@@ -28,6 +28,7 @@ type EtcdConf struct {
 type MongoConf struct {
 	Url               string
 	ConnectionTimeout int
+	BatchCount        int
 }
 
 var Conf *Config

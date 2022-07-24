@@ -5,6 +5,7 @@ import (
 )
 
 func InitLogger(path string) (err error) {
+	_ = path
 	logger := zap.LoadConfigurationForZaplogger(Conf.Base.LogConfigPath)
 	defer logger.Sync()
 

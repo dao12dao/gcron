@@ -10,5 +10,8 @@ func Route(r *gin.RouterGroup) {
 		adminGroup.POST("/tasks", saveTask)
 		adminGroup.DELETE("/tasks/:name", removeTask)
 		adminGroup.POST("/task/kill", killTask)
+		adminGroup.GET("/task/log/:name", logTask)
+
+		adminGroup.GET("/workers", listWorker)
 	}
 }

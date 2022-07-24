@@ -1,0 +1,11 @@
+{"level":"info","datetime":"2022-07-24 23:43:51","message":"worker.Init() completed!"}
+{"level":"info","datetime":"2022-07-24 23:43:55","message":"task is done. name:t1, result:t1\n, err:<nil>\n"}
+{"level":"info","datetime":"2022-07-24 23:44:01","message":"task is done. name:t1, result:t1\n, err:<nil>\n"}
+{"level":"info","datetime":"2022-07-24 23:44:05","message":"task is done. name:t1, result:t1\n, err:<nil>\n"}
+{"level":"info","datetime":"2022-07-24 23:44:10","message":"task is done. name:t1, result:t1\n, err:<nil>\n"}
+{"level":"info","datetime":"2022-07-24 23:44:15","message":"task is done. name:t1, result:t1\n, err:<nil>\n"}
+{"level":"info","datetime":"2022-07-24 23:44:20","message":"task is done. name:t1, result:t1\n, err:<nil>\n"}
+{"level":"info","datetime":"2022-07-24 23:44:25","message":"task is done. name:t1, result:t1\n, err:<nil>\n"}
+{"level":"info","datetime":"2022-07-24 23:44:30","message":"task is done. name:t1, result:t1\n, err:<nil>\n"}
+{"level":"info","datetime":"2022-07-24 23:44:35","message":"task is done. name:t1, result:t1\n, err:<nil>\n"}
+{"level":"info","datetime":"2022-07-24 23:44:38","message":"worker.Quit() completed!"}

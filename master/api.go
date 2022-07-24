@@ -3,6 +3,7 @@ package master
 import (
 	"crontab/common"
 	"crontab/common/model"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -76,19 +77,70 @@ ERR:
 
 func killTask(c *gin.Context) {
 	var (
-		err      error
-		taskName string
+		err  error
+		task *model.KillInputTask
 	)
 
-	if err = c.BindJSON(&taskName); err != nil {
+	task = &model.KillInputTask{}
+	if err = c.BindJSON(&task); err != nil {
 		goto ERR
 	}
 
-	if err = GlobalTaskMgr.KillTask(taskName); err != nil {
+	if err = GlobalTaskMgr.KillTask(task.Name); err != nil {
 		goto ERR
 	}
 
 	common.BuildResposne(c, 0, "success", nil)
+	return
+
+ERR:
+	common.ChkApiErr(c, err)
+}
+
+func logTask(c *gin.Context) {
+	var (
+		name    string
+		isOk    bool
+		err     error
+		logList []*TaskLog
+		offset  int
+		limit   int
+	)
+
+	if name, isOk = c.Params.Get("name"); !isOk {
+		goto ERR
+	}
+
+	if offset, err = strconv.Atoi(c.DefaultQuery("offset", "0")); err != nil {
+		goto ERR
+	}
+
+	if limit, err = strconv.Atoi(c.DefaultQuery("limit", "20")); err != nil {
+		goto ERR
+	}
+
+	if logList, err = GlobalTaskLogMgr.ListLog(name, offset, limit); err != nil {
+		goto ERR
+	}
+
+	common.BuildResposne(c, 0, "success", logList)
+	return
+
+ERR:
+	common.ChkApiErr(c, err)
+}
+
+func listWorker(c *gin.Context) {
+	var (
+		err  error
+		list []string
+	)
+
+	if list, err = GlobalWorkerMgr.ListWorkers(); err != nil {
+		goto ERR
+	}
+
+	common.BuildResposne(c, 0, "success", list)
 	return
 
 ERR:
