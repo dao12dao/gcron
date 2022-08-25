@@ -1,7 +1,7 @@
 package worker
 
 import (
-	"crontab/common/zap"
+	"gcron/common/zap"
 )
 
 func InitLogger() (err error) {
@@ -9,10 +9,5 @@ func InitLogger() (err error) {
 	defer logger.Sync()
 
 	zap.Zlogger = logger
-
 	return
-}
-
-func Info() {
-	zap.Zlogger.Info()
 }

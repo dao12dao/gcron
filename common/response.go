@@ -1,8 +1,8 @@
 package common
 
 import (
-	"crontab/common/zap"
 	"encoding/json"
+	"gcron/common/zap"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,7 +13,24 @@ type Response struct {
 	Data any    `json:"data"`
 }
 
-func BuildResposne(c *gin.Context, code int, msg string, data any) (err error) {
+func BuildResposne(c *gin.Context, data any) (err error) {
+	return BuildBaseResposne(c, 0, "Success", data)
+
+}
+
+// if err is not nil, write log and return response.
+func ChkApiErr(c *gin.Context, err error) bool {
+	if err != nil {
+		zap.Logf(zap.ERROR, "error:%+v", err)
+		BuildBaseResposne(c, -1, "Failed", err)
+		return true
+	}
+
+	return false
+}
+
+// build base response
+func BuildBaseResposne(c *gin.Context, code int, msg string, data any) (err error) {
 	if c.IsAborted() {
 		return
 	}
@@ -34,15 +51,4 @@ func BuildResposne(c *gin.Context, code int, msg string, data any) (err error) {
 
 	c.Data(200, gin.MIMEJSON, retValue)
 	return
-}
-
-// if err is not nil, write log and return response.
-func ChkApiErr(c *gin.Context, err error) bool {
-	if err != nil {
-		zap.Zlogger.Infof("error:%v", err)
-		BuildResposne(c, -1, "falied", err)
-		return true
-	}
-
-	return false
 }

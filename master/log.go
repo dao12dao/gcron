@@ -2,7 +2,7 @@ package master
 
 import (
 	"context"
-	"crontab/common/zap"
+	"gcron/common/zap"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -53,7 +53,7 @@ func InitTaskLogManager(conf *MongoConf) (err error) {
 
 	return
 ERR:
-	zap.Zlogger.Errorf("master.InitTaskLogManager() panic, error is:%v", err)
+	zap.Logf(zap.ERROR, "master.InitTaskLogManager() panic, error is:%+v", err)
 	return
 }
 
@@ -84,6 +84,6 @@ func (t *TaskLogMgr) ListLog(name string, offset, limit int) (logList []*TaskLog
 
 	return
 ERR:
-	zap.Zlogger.Errorf("master.ListLog() panic, error is:%v", err)
+	zap.Logf(zap.ERROR, "master.ListLog() panic, error is:%+v", err)
 	return
 }

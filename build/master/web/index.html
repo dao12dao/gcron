@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golang分布式Crontab</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- 页头 -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="page-header">
+                    <h1>管理后台<small>Golang分布式Crontab</small></h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功能按钮 -->
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-primary" id="btn-create">新建任务</button>
+                <button type="button" class="btn btn-info" id="btn-worker">健康节点</button>
+            </div>
+        </div>
+
+        <!-- 任务列表 -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default" style="margin-top:20px;">
+                    <div class="panel-body">
+                        <table id="task-list" class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>任务名称</th>
+                                    <th>Shell命令</th>
+                                    <th>Crontab表达式</th>
+                                    <th>任务操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- <tr>
+                                    <td class="task-name">tt1</td>
+                                    <td class="task-command">echo hello2</td>
+                                    <td class="task-cronExpr">* * * * * </td>
+                                    <td>
+                                        <div class="btn-toolbar">
+                                            <button class="btn btn-info edit-task">编辑</button>
+                                            <button class="btn btn-danger delete-task" style="margin-left:10px;">删除</button>
+                                            <button class="btn btn-warning kill-task" style="margin-left:10px;">强杀</button>
+                                            <button class="btn btn-success log-task" style="margin-left:10px;">日志</button>
+                                        </div>
+                                    </td>
+                                </tr> -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑和新增的模态框 -->
+    <div id="task-model" class="modal fade" role="dialog" aria-hidden="true" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">编辑任务</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="edit-name"><h6>任务名称</h6></label>
+                            <input type="text" class="form-control" id="edit-name" placeholder="task name">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-command"><h6>Shell命令</h6></label>
+                            <input type="text" class="form-control" id="edit-command" placeholder="shell command">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-cronExpr"><h6>Cron表达式</h6></label>
+                            <input type="text" class="form-control" id="edit-cronExpr" placeholder="crontab expression">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-info" id="btn-save">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="log-model" class="modal fade" role="dialog" aria-hidden="true" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">任务日志</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <table id="log-list" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Shell命令</th>
+                                <th>错误原因</th>
+                                <th>脚本输出</th>
+                                <th>计划开始时间</th>
+                                <th>实际调度时间</th>
+                                <th>开始执行时间</th>
+                                <th>结束执行时间</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="worker-model" class="modal fade" role="dialog" aria-hidden="true" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">健康节点</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <table id="worker-list" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>节点IP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- script脚本 -->
+    <script>
+        $(document).ready(function(){
+            // edit task
+            $('#task-list').on('click', '.edit-task', function(event){
+                var taskName = $(this).parents('tr').children('.task-name').text()
+                var taskCommand = $(this).parents('tr').children('.task-command').text()
+                var taskCronExpr = $(this).parents('tr').children('.task-cronExpr').text()
+
+                $('#edit-name').val(taskName)
+                $('#edit-command').val(taskCommand)
+                $('#edit-cronExpr').val(taskCronExpr)
+                $('#task-model').modal('show')
+                reloadTaskList()
+            })
+
+            $('#btn-create').on('click',function(event){
+                $('#edit-name').val('')
+                $('#edit-command').val('')
+                $('#edit-cronExpr').val('')
+
+                $('#task-model').modal('show')
+            })
+
+            $('#btn-worker').on('click',function(event){
+                $.ajax({
+                    url: '/api/cron/workers',
+                    dataType: 'json',
+                    method:'GET',
+                    success: function(resp){
+                        if (resp.code != 0) {
+                            return
+                        }
+
+                        $('#worker-list tbody').empty()
+                        var logList = resp.data
+                        for(var i = 0;i < logList.length;i++) {
+                            var log = logList[i];
+                            var tr = $('<tr>')
+                                .append($('<td class="IP">').html(log));
+
+                            $('#worker-list tbody').append(tr)
+                        }
+                        $('#worker-model').modal('show')
+                    }
+                })
+            })
+
+            // save task
+            $('#btn-save').on('click',function(event){
+                var taskInfo = {name: $('#edit-name').val(), command: $('#edit-command').val(), cron_expr:$('#edit-cronExpr').val()}
+                $.ajax({
+                    url: '/api/cron/tasks',
+                    dataType: 'json',
+                    method:'POST',
+                    contentType : 'application/json; charset=utf-8',
+                    data: JSON.stringify(taskInfo),
+                    complete: function(){
+                        reloadTaskList()
+                    }
+                })
+
+                $('#task-model').modal('toggle')
+                reloadTaskList()
+            })
+
+            // delete task
+            $('#task-list').on('click', '.delete-task', function(event){
+                var taskName = $(this).parents('tr').children('.task-name').text()
+                $.ajax({
+                    url: '/api/cron/tasks/' + taskName,
+                    dataType: 'json',
+                    method:'DELETE',
+                    complete: function(){
+                        reloadTaskList()
+                    }
+                })
+            })
+
+            // kill task
+            $('#task-list').on('click', '.kill-task', function(event){
+                var taskName = $(this).parents('tr').children('.task-name').text()
+                $.ajax({
+                    url: '/api/cron/task/kill',
+                    dataType: 'json',
+                    method:'POST',
+                    contentType : 'application/json; charset=utf-8',
+                    data: JSON.stringify({name: taskName}),
+                    complete: function(){
+                        reloadTaskList()
+                    }
+                })
+            })
+
+            // view task log
+            $('#task-list').on('click', '.log-task', function(event){
+                var taskName = $(this).parents('tr').children('.task-name').text()
+                $.ajax({
+                    url: '/api/cron/task/log/' + taskName,
+                    dataType: 'json',
+                    method:'GET',
+                    success: function(resp){
+                        if (resp.code != 0) {
+                            return
+                        }
+                        $('#log-list tbody').empty()
+                        var logList = resp.data
+                        for(var i = 0;i < logList.length;i++) {
+                            var log = logList[i];
+                            var tr = $('<tr>')
+                                .append($('<td class="command">').html(log.command))
+                                .append($('<td class="err">').html(log.err))
+                                .append($('<td class="output">').html(log.output))
+                                .append($('<td class="plan_time">').html(log.plan_time))
+                                .append($('<td class="schedule_time">').html(log.schedule_time))
+                                .append($('<td class="start_time">').html(log.start_time))
+                                .append($('<td class="end_time">').html(log.end_time));
+
+                            $('#log-list tbody').append(tr)
+                        }
+                        $('#log-model').modal('show')
+                    }
+                })
+            })
+
+            // refresh the task list
+            function reloadTaskList() {
+                $.ajax({
+                    url: '/api/cron/tasks',
+                    dataType: 'json',
+                    method: 'GET',
+                    success: function(resp){
+                        if (resp.code != 0) {
+                            return
+                        }
+
+                        $('#task-list tbody').empty()
+
+                        var taskList = resp.data
+                        for(var i = 0;i < taskList.length;i++) {
+                            var task = taskList[i];
+                            var tr = $('<tr>')
+                                .append($('<td class="task-name">').html(task.name))
+                                .append($('<td class="task-command">').html(task.command))
+                                .append($('<td class="task-cronExpr">').html(task.cron_expr));
+                            var toolbar = $('<div class="btn-toolbar">')
+                                .append($('<button class="btn btn-info edit-task">').html('编辑'))
+                                .append($('<button class="btn btn-danger delete-task">').html('删除'))
+                                .append($('<button class="btn btn-warning kill-task">').html('强杀'))
+                                .append($('<button class="btn btn-success log-task">').html('日志'));
+                            tr.append(toolbar)
+
+                            $('#task-list tbody').append(tr)
+                        }
+                    }
+                })
+            }
+
+            reloadTaskList()
+        })
+    </script>
+
+    <style>
+        .edit-task, .delete-task, .kill-task, .log-task {
+            margin-left: 10px;
+        }
+
+        .form-control {
+            margin-top: 10px;
+        }
+
+        .form-group {
+            margin-top: 20px;
+        }
+
+        #btn-log {
+            margin-left: 20px;
+        }
+    </style>
+</body>
+</html>

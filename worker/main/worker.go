@@ -1,10 +1,10 @@
 package main
 
 import (
-	"crontab/common/zap"
-	"crontab/worker"
-	"crontab/worker/task"
 	"flag"
+	"gcron/common/zap"
+	"gcron/worker"
+	"gcron/worker/task"
 	"os"
 	"os/signal"
 	"runtime"
@@ -66,7 +66,7 @@ func Init() {
 		goto ERR
 	}
 
-	zap.Zlogger.Infof("worker.Init() completed!")
+	zap.Logf(zap.INFO, "worker.Init() completed!")
 
 	c = make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
@@ -83,9 +83,9 @@ func Init() {
 	}
 
 ERR:
-	zap.Zlogger.Errorf("worker.Init() panic, error is:%+v", err)
+	zap.Logf(zap.ERROR, "worker.Init() panic, error is:%+v", err)
 }
 
 func Quit() {
-	zap.Zlogger.Infof("worker.Quit() completed!")
+	zap.Logf(zap.INFO, "worker.Quit() completed!")
 }

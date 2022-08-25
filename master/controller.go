@@ -2,8 +2,8 @@ package master
 
 import (
 	"context"
-	"crontab/common/middleware"
-	"crontab/common/zap"
+	"gcron/common/middleware"
+	"gcron/common/zap"
 	"net"
 	"net/http"
 	"time"
@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	ServerList []*http.Server
+	ServerList    []*http.Server
+	apiDocHandler gin.HandlerFunc
 )
 
 func InitController(ports []string) (err error) {
@@ -79,7 +80,16 @@ func initHandler() http.Handler {
 	}
 
 	// api group
-	Route(handler.Group("api"))
+	ApiRoute(handler.Group("api"))
+
+	// docs group
+	if apiDocHandler != nil {
+		handler.GET("/docs", func(c *gin.Context) {
+			c.Redirect(302, "/swagger/index.html")
+		})
+
+		handler.GET("/swagger/*any", apiDocHandler)
+	}
 
 	return handler
 }
@@ -89,7 +99,7 @@ func CloseController() {
 	_ = cancel
 	for _, svr := range ServerList {
 		if err := svr.Shutdown(ctx); err != nil {
-			zap.Zlogger.Errorf("master.svr.Shutdown() panic, error is:%v", err)
+			zap.Logf(zap.ERROR, "master.svr.Shutdown() panic, error is:%+v", err)
 		}
 	}
 

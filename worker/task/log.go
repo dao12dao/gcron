@@ -2,8 +2,8 @@ package task
 
 import (
 	"context"
-	"crontab/common/zap"
-	"crontab/worker"
+	"gcron/common/zap"
+	"gcron/worker"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -55,7 +55,7 @@ func InitTaskLogManager(conf *worker.MongoConf) (err error) {
 
 	return
 ERR:
-	zap.Zlogger.Errorf("task.InitTaskLogManager() panic, error is:%v", err)
+	zap.Logf(zap.ERROR, "task.InitTaskLogManager() panic, error is:%+v", err)
 	return
 }
 

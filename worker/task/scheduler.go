@@ -1,9 +1,9 @@
 package task
 
 import (
-	"crontab/common"
-	"crontab/common/model"
-	"crontab/common/zap"
+	"gcron/common"
+	"gcron/common/model"
+	"gcron/common/zap"
 	"time"
 )
 
@@ -165,5 +165,5 @@ func (s *Scheduler) HandleTaskResult(result *model.TaskExecuteResult) {
 	}
 
 	GlobalTaskLogMgr.AppendTaskLog(taskLog)
-	zap.Zlogger.Infof("task is done. name:%v, result:%+v, err:%+v\n", result.Execution.Task.Name, string(result.Output), result.Err)
+	zap.Logf(zap.INFO, "task is done. name:%+v, result:%+v, err:%+v\n", result.Execution.Task.Name, string(result.Output), result.Err)
 }

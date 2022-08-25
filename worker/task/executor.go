@@ -1,7 +1,7 @@
 package task
 
 import (
-	"crontab/common/model"
+	"gcron/common/model"
 	"math/rand"
 	"os/exec"
 	"time"

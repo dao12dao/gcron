@@ -1,13 +1,22 @@
 package master
 
 import (
-	"crontab/common"
-	"crontab/common/model"
+	"gcron/common"
+	"gcron/common/model"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary save task to db
+// @Schemes http
+// @Description save task to db
+// @Tags 任务管理
+// @Accept json
+// @Produce json
+// @Param params body model.Task true "request params"
+// @Success 200 {object} common.Response{data=model.Task}
+// @Router /api/cron/tasks [POST]
 func saveTask(c *gin.Context) {
 	var (
 		oldTask *model.Task
@@ -28,13 +37,22 @@ func saveTask(c *gin.Context) {
 		goto ERR
 	}
 
-	common.BuildResposne(c, 0, "success", oldTask)
+	common.BuildResposne(c, oldTask)
 	return
 
 ERR:
 	common.ChkApiErr(c, err)
 }
 
+// @Summary delete task by name
+// @Schemes http
+// @Description delete task by name
+// @Tags 任务管理
+// @Accept json
+// @Produce json
+// @Param name path string true "request params"
+// @Success 200 {object} common.Response{data=model.Task}
+// @Router /api/cron/tasks/{name} [DELETE]
 func removeTask(c *gin.Context) {
 	var (
 		name    string
@@ -51,13 +69,21 @@ func removeTask(c *gin.Context) {
 		goto ERR
 	}
 
-	common.BuildResposne(c, 0, "success", oldTask)
+	common.BuildResposne(c, oldTask)
 	return
 
 ERR:
 	common.ChkApiErr(c, err)
 }
 
+// @Summary get task list
+// @Schemes http
+// @Description get task list
+// @Tags 任务管理
+// @Accept json
+// @Produce json
+// @Success 200 {object} common.Response{data=model.Task}
+// @Router /api/cron/tasks [GET]
 func listTask(c *gin.Context) {
 	var (
 		err  error
@@ -68,13 +94,22 @@ func listTask(c *gin.Context) {
 		goto ERR
 	}
 
-	common.BuildResposne(c, 0, "success", list)
+	common.BuildResposne(c, list)
 	return
 
 ERR:
 	common.ChkApiErr(c, err)
 }
 
+// @Summary kill task by name
+// @Schemes http
+// @Description kill task by name
+// @Tags 任务管理
+// @Accept json
+// @Produce json
+// @Param params body model.KillInputTask true "request params"
+// @Success 200 {object} common.Response{}
+// @Router /api/cron/task/kill [POST]
 func killTask(c *gin.Context) {
 	var (
 		err  error
@@ -90,13 +125,22 @@ func killTask(c *gin.Context) {
 		goto ERR
 	}
 
-	common.BuildResposne(c, 0, "success", nil)
+	common.BuildResposne(c, struct{}{})
 	return
 
 ERR:
 	common.ChkApiErr(c, err)
 }
 
+// @Summary get log list by task name
+// @Schemes http
+// @Description get log list by task name
+// @Tags 任务管理
+// @Accept json
+// @Produce json
+// @Param name path string true "request params"
+// @Success 200 {object} common.Response{data=TaskLog}
+// @Router /api/cron/task/log/{name} [GET]
 func logTask(c *gin.Context) {
 	var (
 		name    string
@@ -123,13 +167,21 @@ func logTask(c *gin.Context) {
 		goto ERR
 	}
 
-	common.BuildResposne(c, 0, "success", logList)
+	common.BuildResposne(c, logList)
 	return
 
 ERR:
 	common.ChkApiErr(c, err)
 }
 
+// @Summary get worker list
+// @Schemes http
+// @Description get worker list
+// @Tags 任务管理
+// @Accept json
+// @Produce json
+// @Success 200 {object} common.Response{data=string}
+// @Router /api/cron/workers [GET]
 func listWorker(c *gin.Context) {
 	var (
 		err  error
@@ -140,7 +192,7 @@ func listWorker(c *gin.Context) {
 		goto ERR
 	}
 
-	common.BuildResposne(c, 0, "success", list)
+	common.BuildResposne(c, list)
 	return
 
 ERR:

@@ -1,6 +1,6 @@
 package task
 
-import "crontab/common/model"
+import "gcron/common/model"
 
 type TaskEventType int8
 

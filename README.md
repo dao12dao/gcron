@@ -15,15 +15,31 @@
   + mongodb
   + gin
 
+#### Features
+  + Create/Edit Task
+    - TaskName: means the name of task, keep it unique.
+    - ShellCommand: means what the task will do.
+    - CronExpr: https://github.com/gorhill/cronexpr.
+  + Delete Task
+    - Just Remove Task by TaskName.
+  + Kill Task
+    - Interrupt the running task.
+  + View Log
+    - List the task log.
+
 #### Deployment
+  + Generate swagger docs for api in master.(Optional)
+    + ```bash> swag init --dir ./ -g master/main/master.go -o master/docs```
   + Build master and run, also can run with nginx.
-    + ```bash> go build -o master/main/cron_master master/main/master.go```
-    + ```bash> ./cron_master -config config.ini```
+    + ```bash> go build (-tags doc) -o master/main/master master/main/master.go```
+    + ```bash> cd master/main && ./master -config config.ini```
   + Build worker and run.
-    + ```bash> go build -o worker/main/cron_worker worker/main/worker.go```
-    + ```bash> ./cron_worker -config config.ini```
+    + ```bash> go build -o worker/main/worker worker/main/worker.go```
+    + ```bash> cd worker/main && ./worker -config config.ini```
   + Visit the backend web page.
     + ```http://localhost:8080/web```
+  + Visit the api docs page.
+    + ```http://localhost:8080/docs``` or ```http://localhost:8080/swagger/index.html```
 
 #### Systemctl(Linux)/Launchctl(MacOS)
 > Run at system loaded with systemctl in linux or with launchctl in macos.

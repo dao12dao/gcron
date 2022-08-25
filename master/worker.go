@@ -2,9 +2,9 @@ package master
 
 import (
 	"context"
-	"crontab/common"
-	"crontab/common/constant"
-	"crontab/common/zap"
+	"gcron/common"
+	"gcron/common/constant"
+	"gcron/common/zap"
 	"time"
 
 	"github.com/coreos/etcd/clientv3"
@@ -48,7 +48,7 @@ func InitWorkerManager(c *EtcdConf) (err error) {
 
 	return
 ERR:
-	zap.Zlogger.Errorf("master.InitWorkerManager() panic, error is:%v", err)
+	zap.Logf(zap.ERROR, "master.InitWorkerManager() panic, error is:%+v", err)
 	return
 }
 
@@ -70,6 +70,6 @@ func (w *WorkerManager) ListWorkers() (list []string, err error) {
 
 	return
 ERR:
-	zap.Zlogger.Errorf("master.ListWorkers() panic, error is:%v", err)
+	zap.Logf(zap.ERROR, "master.ListWorkers() panic, error is:%+v", err)
 	return
 }

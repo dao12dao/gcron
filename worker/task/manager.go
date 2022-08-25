@@ -2,11 +2,11 @@ package task
 
 import (
 	"context"
-	"crontab/common"
-	"crontab/common/constant"
-	"crontab/common/model"
-	"crontab/common/zap"
-	"crontab/worker"
+	"gcron/common"
+	"gcron/common/constant"
+	"gcron/common/model"
+	"gcron/common/zap"
+	"gcron/worker"
 	"time"
 
 	"github.com/coreos/etcd/clientv3"
@@ -60,7 +60,7 @@ func InitTaskManager(c *worker.EtcdConf) (err error) {
 
 	return
 ERR:
-	zap.Zlogger.Errorf("task.InitTaskManager() panic, error is:%v", err)
+	zap.Logf(zap.ERROR, "task.InitTaskManager() panic, error is:%+v", err)
 	return
 }
 
@@ -118,7 +118,7 @@ func (m *TaskManager) watchTasks() (err error) {
 
 	return
 ERR:
-	zap.Zlogger.Errorf("task.watchTasks() panic, error is:%v", err)
+	zap.Logf(zap.ERROR, "task.watchTasks() panic, error is:%+v", err)
 	return
 }
 

@@ -1,0 +1,187 @@
+definitions:
+  common.Response:
+    properties:
+      code:
+        type: integer
+      data:
+        type: any
+      msg:
+        type: string
+    type: object
+  master.TaskLog:
+    properties:
+      command:
+        type: string
+      end_time:
+        type: string
+      err:
+        type: string
+      output:
+        type: string
+      plan_time:
+        type: string
+      schedule_time:
+        type: string
+      start_time:
+        type: string
+      task_name:
+        type: string
+    type: object
+  model.KillInputTask:
+    properties:
+      name:
+        type: string
+    type: object
+  model.Task:
+    properties:
+      command:
+        type: string
+      cron_expr:
+        type: string
+      name:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/cron/task/kill:
+    post:
+      consumes:
+      - application/json
+      description: kill task by name
+      parameters:
+      - description: request params
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/model.KillInputTask'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.Response'
+      summary: kill task by name
+      tags:
+      - 任务管理
+  /api/cron/task/log/{name}:
+    get:
+      consumes:
+      - application/json
+      description: get log list by task name
+      parameters:
+      - description: request params
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/master.TaskLog'
+              type: object
+      summary: get log list by task name
+      tags:
+      - 任务管理
+  /api/cron/tasks:
+    get:
+      consumes:
+      - application/json
+      description: get task list
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Task'
+              type: object
+      summary: get task list
+      tags:
+      - 任务管理
+    post:
+      consumes:
+      - application/json
+      description: save task to db
+      parameters:
+      - description: request params
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/model.Task'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Task'
+              type: object
+      summary: save task to db
+      tags:
+      - 任务管理
+  /api/cron/tasks/{name}:
+    delete:
+      consumes:
+      - application/json
+      description: delete task by name
+      parameters:
+      - description: request params
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Task'
+              type: object
+      summary: delete task by name
+      tags:
+      - 任务管理
+  /api/cron/workers:
+    get:
+      consumes:
+      - application/json
+      description: get worker list
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: get worker list
+      tags:
+      - 任务管理
+swagger: "2.0"

@@ -2,9 +2,9 @@ package worker
 
 import (
 	"context"
-	"crontab/common"
-	"crontab/common/constant"
-	"crontab/common/zap"
+	"gcron/common"
+	"gcron/common/constant"
+	"gcron/common/zap"
 	"net"
 	"time"
 
@@ -64,7 +64,7 @@ func InitRegister(c *EtcdConf) (err error) {
 
 	return
 ERR:
-	zap.Zlogger.Errorf("worker.InitRegister() panic, error is:%v", err)
+	zap.Logf(zap.ERROR, "worker.InitRegister() panic, error is:%+v", err)
 	return
 }
 
@@ -105,7 +105,7 @@ func (r *Register) KeepAlive() {
 		}
 
 	RETRY:
-		zap.Zlogger.Infof("worker.KeepAlive() retry")
+		zap.Logf(zap.INFO, "worker.KeepAlive() retry.")
 		time.Sleep(1 * time.Second)
 		if cancelFunc != nil {
 			cancelFunc()

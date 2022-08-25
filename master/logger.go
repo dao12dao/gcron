@@ -1,7 +1,7 @@
 package master
 
 import (
-	"crontab/common/zap"
+	"gcron/common/zap"
 )
 
 func InitLogger(path string) (err error) {

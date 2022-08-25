@@ -33,11 +33,8 @@ type MongoConf struct {
 
 var Conf *Config
 
-func init() {
-	Conf = &Config{}
-}
-
 func InitConfig(configPath string) (err error) {
+	Conf = &Config{}
 	if err = ini.MapTo(&Conf, configPath); err != nil {
 		return
 	}

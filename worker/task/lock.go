@@ -2,9 +2,9 @@ package task
 
 import (
 	"context"
-	"crontab/common"
-	"crontab/common/constant"
-	"crontab/common/zap"
+	"gcron/common"
+	"gcron/common/constant"
+	"gcron/common/zap"
 
 	"github.com/coreos/etcd/clientv3"
 )
@@ -94,7 +94,7 @@ func (t *TaskLock) TryLock() (err error) {
 	t.IsLocked = true
 	return
 ERR:
-	zap.Zlogger.Errorf("task.TryLock() panic, error is:%v", err)
+	zap.Logf(zap.ERROR, "task.TryLock() panic, error is:%+v", err)
 	cancelFunc()
 	// release/revoke the lease.
 	t.Lease.Revoke(context.TODO(), leaseID)

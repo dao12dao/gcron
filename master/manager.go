@@ -2,10 +2,10 @@ package master
 
 import (
 	"context"
-	"crontab/common/constant"
-	"crontab/common/model"
-	"crontab/common/zap"
 	"encoding/json"
+	"gcron/common/constant"
+	"gcron/common/model"
+	"gcron/common/zap"
 	"time"
 
 	"github.com/coreos/etcd/clientv3"
@@ -53,7 +53,7 @@ func InitTaskManager(c *EtcdConf) (err error) {
 
 	return
 ERR:
-	zap.Zlogger.Errorf("master.InitTaskManager() panic, error is:%v", err)
+	zap.Logf(zap.ERROR, "master.InitTaskManager() panic, error is:%+v", err)
 	return
 }
 
@@ -81,7 +81,7 @@ func (m *TaskManager) ListTask() (list []*model.Task, err error) {
 	}
 	return
 ERR:
-	zap.Zlogger.Errorf("master.ListTask() panic, error is:%v", err)
+	zap.Logf(zap.ERROR, "master.ListTask() panic, error is:%+v", err)
 	return
 }
 
@@ -111,7 +111,7 @@ func (m *TaskManager) SaveTask(task *model.Task) (oldTask *model.Task, err error
 	}
 	return
 ERR:
-	zap.Zlogger.Errorf("master.SaveTask() panic, error is:%v", err)
+	zap.Logf(zap.ERROR, "master.SaveTask() panic, error is:%+v", err)
 	return
 }
 
@@ -134,7 +134,7 @@ func (m *TaskManager) RemoveTask(name string) (oldTask *model.Task, err error) {
 
 	return
 ERR:
-	zap.Zlogger.Errorf("master.RemoveTask() panic, error is:%v", err)
+	zap.Logf(zap.ERROR, "master.RemoveTask() panic, error is:%+v", err)
 	return
 }
 
@@ -159,6 +159,6 @@ func (m *TaskManager) KillTask(name string) (err error) {
 
 	return
 ERR:
-	zap.Zlogger.Errorf("master.KillTask() panic, error is:%v", err)
+	zap.Logf(zap.ERROR, "master.KillTask() panic, error is:%+v", err)
 	return
 }
