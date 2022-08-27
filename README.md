@@ -1,8 +1,10 @@
-### Distributed Task Scheduling System(DTS)
+### Distributed Task Scheduling System(DTS) - 分布式定时任务管理系统
 
 >
-> DTS is written in pure Golang.
+> DTS is written in pure Golang, Used to replace crontab in Linux.
+> DTS是用Go语言实现的分布式定时任务管理系统，用于代替Linux的Crontab定时任务管理。
 > Tasks can be executed in more than one node with lock mode.
+> 任务可运行在多个节点，实现了基础的服务发现和任务分布式锁。
 > 
 
 #### Project Structure
