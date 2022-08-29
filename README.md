@@ -1,6 +1,7 @@
 ### Distributed Task Scheduling System(DTS) - 分布式定时任务管理系统
 
-![](https://img.shields.io/github/stars/dao12dao/gcron?style=social)
+![https://img.shields.io/github/stars/dao12dao/gcron?style=social](https://img.shields.io/github/stars/dao12dao/gcron?style=for-the-badge) ![](https://img.shields.io/github/forks/dao12dao/gcron?style=for-the-badge)
+
 
 >
 > DTS is written in pure Golang, Used to replace crontab in Linux.
