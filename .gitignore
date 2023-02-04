@@ -4,3 +4,4 @@
 ./worker/main/log.*
 ./master/main/cron_master
 ./master/main/log.*
+.idea
